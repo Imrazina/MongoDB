@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+
+Funkcni_reseni/volumes/
+Funkcni_reseni/keyfile/
+Funkcni_reseni/backups/
+
+Dokumentace/evidence/
+Data/raw/
+*.log
+.env

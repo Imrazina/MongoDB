@@ -1,59 +1,204 @@
+x-node-common: &node-common
+  image: mongo:8.0
+  networks:
+    - mongo-cluster
+  depends_on:
+    init-keyfile:
+      condition: service_completed_successfully
+  volumes:
+    - mongo_keyfile:/keyfile:ro
+
 services:
+  init-keyfile:
+    image: mongo:8.0
+    networks:
+      - mongo-cluster
+    command:
+      - bash
+      - -lc
+      - |
+        mkdir -p /keyfile
+        if [ ! -s /keyfile/mongo-keyfile ]; then
+          head -c 756 /dev/urandom | base64 | tr -d '\n' > /keyfile/mongo-keyfile
+        fi
+        chown mongodb:mongodb /keyfile/mongo-keyfile
+        chmod 400 /keyfile/mongo-keyfile
+        ls -l /keyfile/mongo-keyfile
+    volumes:
+      - mongo_keyfile:/keyfile
+    restart: "no"
+
   cfg1:
-    image: mongo:8.0
-    command: ["mongod","--configsvr","--replSet","cfgRS","--port","27019","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/cfg1:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--configsvr","--replSet","cfgRS","--port","27019","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - cfg1_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   cfg2:
-    image: mongo:8.0
-    command: ["mongod","--configsvr","--replSet","cfgRS","--port","27019","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/cfg2:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--configsvr","--replSet","cfgRS","--port","27019","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - cfg2_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   cfg3:
-    image: mongo:8.0
-    command: ["mongod","--configsvr","--replSet","cfgRS","--port","27019","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/cfg3:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--configsvr","--replSet","cfgRS","--port","27019","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - cfg3_data:/data/db
+      - mongo_keyfile:/keyfile:ro
 
   sh1a:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard1RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh1a:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard1RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh1a_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   sh1b:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard1RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh1b:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard1RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh1b_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   sh1c:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard1RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh1c:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard1RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh1c_data:/data/db
+      - mongo_keyfile:/keyfile:ro
 
   sh2a:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard2RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh2a:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard2RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh2a_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   sh2b:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard2RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh2b:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard2RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh2b_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   sh2c:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard2RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh2c:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard2RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh2c_data:/data/db
+      - mongo_keyfile:/keyfile:ro
 
   sh3a:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard3RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh3a:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard3RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh3a_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   sh3b:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard3RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh3b:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard3RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh3b_data:/data/db
+      - mongo_keyfile:/keyfile:ro
   sh3c:
-    image: mongo:8.0
-    command: ["mongod","--shardsvr","--replSet","shard3RS","--port","27018","--bind_ip_all","--keyFile","/etc/mongo-keyfile"]
-    volumes: ["./volumes/sh3c:/data/db","./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    <<: *node-common
+    command: ["mongod","--shardsvr","--replSet","shard3RS","--port","27018","--bind_ip_all","--keyFile","/keyfile/mongo-keyfile"]
+    volumes:
+      - sh3c_data:/data/db
+      - mongo_keyfile:/keyfile:ro
 
   mongos:
     image: mongo:8.0
-    depends_on: [cfg1,cfg2,cfg3,sh1a,sh1b,sh1c,sh2a,sh2b,sh2c,sh3a,sh3b,sh3c]
-    command: ["mongos","--configdb","cfgRS/cfg1:27019,cfg2:27019,cfg3:27019","--bind_ip_all","--port","27017","--keyFile","/etc/mongo-keyfile"]
-    ports: ["27017:27017"]
-    volumes: ["./keyfile/mongo-keyfile:/etc/mongo-keyfile:ro"]
+    networks:
+      - mongo-cluster
+    depends_on:
+      cfg1:
+        condition: service_started
+      cfg2:
+        condition: service_started
+      cfg3:
+        condition: service_started
+      sh1a:
+        condition: service_started
+      sh1b:
+        condition: service_started
+      sh1c:
+        condition: service_started
+      sh2a:
+        condition: service_started
+      sh2b:
+        condition: service_started
+      sh2c:
+        condition: service_started
+      sh3a:
+        condition: service_started
+      sh3b:
+        condition: service_started
+      sh3c:
+        condition: service_started
+    command: ["mongos","--configdb","cfgRS/cfg1:27019,cfg2:27019,cfg3:27019","--bind_ip_all","--port","27017","--keyFile","/keyfile/mongo-keyfile"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_keyfile:/keyfile:ro
+
+  initializer:
+    image: mongo:8.0
+    networks:
+      - mongo-cluster
+    env_file:
+      - .env
+    depends_on:
+      mongos:
+        condition: service_started
+    command: ["bash","/scripts/init_cluster.sh"]
+    volumes:
+      - ./scripts:/scripts:ro
+      - mongo_keyfile:/keyfile:ro
+    restart: "no"
+
+  data-loader:
+    image: mongo:8.0
+    networks:
+      - mongo-cluster
+    env_file:
+      - .env
+    depends_on:
+      initializer:
+        condition: service_completed_successfully
+    command: ["bash","/scripts/load_data.sh"]
+    volumes:
+      - ./scripts:/scripts:ro
+      - ../Data/processed:/dataset:ro
+    restart: "no"
+
+  mongo-express:
+    image: mongo-express:1.0.2-20
+    networks:
+      - mongo-cluster
+    depends_on:
+      data-loader:
+        condition: service_completed_successfully
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MDB_ADMIN_USER}:${MDB_ADMIN_PWD}@mongos:27017/?authSource=admin
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PWD:-change-me-express}
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+volumes:
+  mongo_keyfile:
+  cfg1_data:
+  cfg2_data:
+  cfg3_data:
+  sh1a_data:
+  sh1b_data:
+  sh1c_data:
+  sh2a_data:
+  sh2b_data:
+  sh2c_data:
+  sh3a_data:
+  sh3b_data:
+  sh3c_data:
+
+networks:
+  mongo-cluster:
+    name: mongo-cluster

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source ~/.bsqbd_world_env
-cd ~/BSQBD_ShabossovaAnna/Funkcni_reseni
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+set -a
+# shellcheck disable=SC1090
+source "$COMPOSE_ROOT/.env"
+set +a
+cd "$COMPOSE_ROOT"
 if [ $# -ne 1 ]; then
   echo "Usage: $0 backups/<timestamp>/worlddb.archive.gz"
   exit 1

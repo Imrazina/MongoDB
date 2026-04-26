@@ -1,0 +1,6 @@
+file,rows,columns,numeric_columns,missing_cells,duplicate_rows,year_min,year_max,country_count
+co2_country_year.csv,61472,11,9,303319,0,1750,2021,225
+happiness_country_year.csv,782,10,8,1,0,2015,2019,162
+wdi_selected_long.csv,91215,6,2,0,0,1960,2018,263
+wdi_selected_country_year.csv,15427,11,9,32201,0,1960,2018,263
+country_year_master.csv,782,20,18,2418,0,2015,2019,162

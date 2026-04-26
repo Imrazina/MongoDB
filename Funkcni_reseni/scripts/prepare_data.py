@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import country_converter as coco
 
-base = Path.home() / "BSQBD_ShabossovaAnna"
+base = Path(__file__).resolve().parents[2]
 raw = base / "Data" / "raw"
 processed = base / "Data" / "processed"
 processed.mkdir(parents=True, exist_ok=True)

@@ -4,8 +4,13 @@ set -euo pipefail
 SHARD="${1:-sh1}"
 NODES=("${SHARD}a" "${SHARD}b" "${SHARD}c")
 
-cd ~/BSQBD_ShabossovaAnna/Funkcni_reseni
-source ~/.bsqbd_world_env
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+set -a
+# shellcheck disable=SC1090
+source "$COMPOSE_ROOT/.env"
+set +a
+cd "$COMPOSE_ROOT"
 
 role_of() {
   local node="$1"
